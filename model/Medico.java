@@ -6,12 +6,13 @@ public class Medico extends Funcionario {
     private String crm;
     private String especialidade;
 
-    public Medico(String nome, String cpf, String dataNascimento, String telefone, String tipoSanguineo, int totalPessoasCadastradas, String matricula, String login, String senha, String crm, String especialidade) {
-        super(nome, cpf, dataNascimento, telefone, tipoSanguineo, totalPessoasCadastradas, matricula, login, senha);
+    public Medico(String nome, String cpf, String dataNascimento, String telefone, String tipoSanguineo, String matricula, String login, String senha, String crm, String especialidade) {
+        super(nome, cpf, dataNascimento, telefone, tipoSanguineo, matricula, login, senha);
         this.crm = crm;
         this.especialidade = especialidade;
     }
-    
+
+    @Override
     public String exibirDadosBasicos() {
         return super.exibirDadosBasicos() + "\n" +
                "CRM: " + crm + "\n" +
@@ -20,6 +21,16 @@ public class Medico extends Funcionario {
 
     @Override
     public List<String> getFuncionalidades() {
-        return List.of("lorem", "ipsum"); //para nao quebrar o codigo
+        return List.of("Visualizar Agenda",
+                        "Editar Prontuário");
     }
+
+    // Fazer validação dos dados??
+    public String getEspecialidade() {return especialidade;}
+
+    public void setEspecialidade(String especialidade) {this.especialidade = especialidade;}
+
+    public String getCrm() {return crm;}
+
+    public void setCrm(String crm) {this.crm = crm;}
 }
