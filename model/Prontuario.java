@@ -1,7 +1,8 @@
 package model;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Prontuario {
+public class Prontuario{
     //WIP (Work in Progress)
     private int idProntuario;
     private List<String> historicoRegistros;
@@ -9,18 +10,38 @@ public class Prontuario {
 
     public Prontuario(int idProntuario) {
         this.idProntuario = idProntuario;
+        this.historicoRegistros=new ArrayList <>();
+        this.alergias=new ArrayList<> ();
     }
 
     public void adicionarRegistro(Medico medico, String descricao) {
        // adiciona o registro com a descricao fornecida pela recepcionista, incluindo o nome do médico que realizou o atendimento
+       if(medico==null){
+        throw new IllegalArgumentException("Médico não informado.");
+       }
+       if(descricao.isEmpty()){
+        throw new IllegalArgumentException("Descrição não informada.");
+       }
+       String texto="Médico: " + medico.nome + "\n" + "Descrição: " + descricao;
+       historicoRegistros.add(texto);
     }
 
     public void adicionarRegistro(Medico medico, String descricao, String prescricao) {
         // adiciona o registro com a descricao e prescricao fornecidas pela recepcionista, incluindo o nome do médico que realizou o atendimento
+        if(medico==null){
+            throw new IllegalArgumentException("Médico não informado.");
+        }
+        if(descricao.isEmpty()){
+            throw new IllegalArgumentException("Descrição não informada.");
+        }
+        if(prescricao.isEmpty()){
+           throw new IllegalArgumentException("Prescrição não informada.");
+        }
+        String texto="Médico: " + medico.nome + "\n" + "Descrição: " + descricao + "\n" + "Prescrição: " + prescricao;
+        historicoRegistros.add(texto);
     }
 
     public List<String> consultarHistorico() {
-        //oq isso deveria retornar? ToT
-        return null; //pra nao quebrar o codigo
+        return historicoRegistros;
     }
 }
