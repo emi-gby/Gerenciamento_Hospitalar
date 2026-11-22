@@ -41,7 +41,21 @@ public class Prontuario{
         historicoRegistros.add(texto);
     }
 
-    public List<String> consultarHistorico() {
+    public void adicionarAlergia(String alergia) {
+        if(alergia==null || alergia.isBlank()) {
+            throw new IllegalArgumentException("Alergia nâo informada.");
+        }
+        if (alergias.contains(alergia.trim())) {
+            throw new IllegalArgumentException("Alergia já existente.");
+        }
+        alergias.add(alergia.trim());
+    }
+
+    public List<String> consultarRegistros() {
         return historicoRegistros;
+    }
+
+    public List<String> getAlergias() {
+        return alergias;
     }
 }
