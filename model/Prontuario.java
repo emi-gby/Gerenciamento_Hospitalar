@@ -15,29 +15,29 @@ public class Prontuario{
     }
 
     public void adicionarRegistro(Medico medico, String descricao) {
-       // adiciona o registro com a descricao fornecida pela recepcionista, incluindo o nome do médico que realizou o atendimento
+       // adiciona o registro com a descricao fornecida pelo medico, incluindo o nome do médico que realizou o atendimento
        if(medico==null){
         throw new IllegalArgumentException("Médico não informado.");
        }
-       if(descricao.isEmpty()){
+       if(descricao == null || descricao.isBlank()){
         throw new IllegalArgumentException("Descrição não informada.");
        }
-       String texto="Médico: " + medico.nome + "\n" + "Descrição: " + descricao;
+       String texto="Médico: " + medico.getNome() + "\n" + "Descrição: " + descricao;
        historicoRegistros.add(texto);
     }
 
     public void adicionarRegistro(Medico medico, String descricao, String prescricao) {
-        // adiciona o registro com a descricao e prescricao fornecidas pela recepcionista, incluindo o nome do médico que realizou o atendimento
+        // adiciona o registro com a descricao e prescricao fornecidas pelo medico, incluindo o nome do médico que realizou o atendimento
         if(medico==null){
             throw new IllegalArgumentException("Médico não informado.");
         }
-        if(descricao.isEmpty()){
+        if(descricao == null || descricao.isBlank()){
             throw new IllegalArgumentException("Descrição não informada.");
         }
-        if(prescricao.isEmpty()){
+        if(prescricao == null || prescricao.isBlank()){
            throw new IllegalArgumentException("Prescrição não informada.");
         }
-        String texto="Médico: " + medico.nome + "\n" + "Descrição: " + descricao + "\n" + "Prescrição: " + prescricao;
+        String texto="Médico: " + medico.getNome() + "\n" + "Descrição: " + descricao + "\n" + "Prescrição: " + prescricao;
         historicoRegistros.add(texto);
     }
 
