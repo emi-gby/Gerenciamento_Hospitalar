@@ -14,6 +14,10 @@ public class Prontuario{
         this.alergias=new ArrayList<> ();
     }
 
+    public int getIdProntuario() {
+        return idProntuario;
+    }
+
     public void adicionarRegistro(Medico medico, String descricao) {
        // adiciona o registro com a descricao fornecida pelo medico, incluindo o nome do médico que realizou o atendimento
        if(medico==null){
