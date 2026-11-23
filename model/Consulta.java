@@ -20,7 +20,7 @@ public class Consulta {
         //lorem ipsum
     }
 
-    public void conclurir(){
+    public void concluir(){
         //lorem ipsum
     }
 }
