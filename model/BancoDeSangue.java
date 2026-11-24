@@ -63,7 +63,7 @@ public class BancoDeSangue{
         return new HashMap<>(estoqueSangue);
     }
     //retorna lista de doações
-    //esse método só vai funcionar se tiver os getters em Doacao
+    //esse método só vai funcionar se tiver os getters em Doacao.
     public List<Doacao> getHistoricoDoacoes(){
         return Collections.unmodifiableList(historicoDoacoes);
     }
