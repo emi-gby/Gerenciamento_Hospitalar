@@ -14,4 +14,20 @@ public class Doacao {
         this.tipoSanguineo = tipoSanguineo;
         this.quantidadeBolsas = quantidadeBolsas;
     }
+
+    public int getIdDoacao(){
+        return idDoacao;
+    }
+    public Pessoa Doador(){
+        return doador;
+    }
+    public String getDataDoacao(){
+        return dataDoacao;
+    }
+    public String getTipoSanguineo(){
+        return tipoSanguineo;
+    }
+    public int getQuantidadeBolsas(){
+        return quantidadeBolsas;
+    }
 }

@@ -27,10 +27,7 @@ public class Consulta {
     }
 
     public void concluir(){
-        if (status.equals("Cancelada")) {
-            throw new IllegalStateException("Consulta cancelada não pode ser concluida.");
-        }
-        status = "Concluida";
+        //lorem ipsum
     }
 
     public int getIdConsulta() {return idConsulta;}
