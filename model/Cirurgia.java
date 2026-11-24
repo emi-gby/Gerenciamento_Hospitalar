@@ -1,4 +1,5 @@
 package model;
+import exception.EstoqueSangueInsuficienteException;
 
 public class Cirurgia {
     //WIP (Work in Progress)
@@ -36,7 +37,7 @@ public class Cirurgia {
 
         if(!banco.verificarDisponibilidade(paciente.getTipoSanguineo(), bolsasSangueNecessarias)) {
             status = "Não autorizada";
-            throw new IllegalStateException("Bolsas de sangue insuficientes.");
+            throw new EstoqueSangueInsuficienteException("Bolsas de sangue insuficientes.");
         }
         status = "Autorizada";
     }
