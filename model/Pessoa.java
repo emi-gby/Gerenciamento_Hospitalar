@@ -19,8 +19,6 @@ public abstract class Pessoa {
 
     public abstract String exibirDadosBasicos();
 
-    // verificar utilidade dos getters e setters
-
     public int getTotalPessoasCadastradas() {
         return totalPessoasCadastradas;
     }
