@@ -52,4 +52,6 @@ public abstract class Funcionario extends Pessoa implements security.Autenticave
 
     public void setLogin(String login) {this.login = login;}
 
+    public void getSenhaParaPersistencia() {return senha;}
+
 }
