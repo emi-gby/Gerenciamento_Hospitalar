@@ -14,6 +14,7 @@ import model.Paciente;
 import model.Pessoa;
 import model.Recepcionista;
 import model.Prontuario;
+import arquivos.ArquivoManager;
 
 public class HospitalService {
     private List<Funcionario> funcionarios;
@@ -21,6 +22,7 @@ public class HospitalService {
     private List<Consulta> consultas;
     private List<Cirurgia> cirurgias;
     private BancoDeSangue bancoDeSangue;
+    private ArquivoManager arquivoManager;
 
     private int proximoIdProntuario;
     private int proximoIdConsulta;
@@ -32,10 +34,25 @@ public class HospitalService {
         this.consultas = new ArrayList<>();
         this.cirurgias = new ArrayList<>();
         this.bancoDeSangue = new BancoDeSangue();
+        this.arquivoManager = new ArquivoManager();
 
-        this.proximoIdProntuario = 1;
-        this.proximoIdConsulta = 1;
-        this.proximoIdCirurgia = 1;
+        carregarDados();
+
+        // recalcula os contadores de id a partir dos dados já salvos
+        proximoIdProntuario = (pacientes.get(pacientes.size() -1).getProntuario().getIdProntuario()) + 1;
+        proximoIdConsulta = consultas.get(consultas.size() -1) + 1;
+        proximoIdCirurgia = cirurgias.get(cirurgias.size() -1) + 1;
+
+    }
+
+    // --- CARREGAR DADOS DO SISTEMA ---
+    public void carregarDados() {
+        arquivoManager.carregarFuncionarios();
+        arquivoManager.carregarPacientes();
+        arquivoManager.carregarBancoDeSangue();
+        arquivoManager.carregarConsultas();
+        arquivoManager.carregarCirurgias();
+
     }
 
     // --- AUTENTICAÇÃO ---
@@ -65,6 +82,9 @@ public class HospitalService {
         // Instancia Paciente e adiciona em pacientes
         Paciente paciente = new Paciente(nome, cpf, dataNascimento, telefone, tipoSanguineo, convenio, prontuario);
         pacientes.add(paciente);
+
+        // Salva para a Persistência
+        arquivoManager.salvarPacientes(pacientes);
     }
 
     public void cadastrarMedico(String nome, String cpf, String dataNascimento,
@@ -73,6 +93,9 @@ public class HospitalService {
         // Instancia Medico e adiciona em funcionarios
         Medico medico = new Medico(nome, cpf, dataNascimento, telefone, tipoSanguineo, matricula, login, senha, crm, especialidade);
         funcionarios.add(medico);
+
+        // Salva para a Persistência
+        arquivoManager.salvarFuncionarios(funcionarios);
     }
 
     public void cadastrarRecepcionista(String nome, String cpf, String dataNascimento,
@@ -81,6 +104,9 @@ public class HospitalService {
         // Instancia Recepcionista e adiciona em funcionarios
         Recepcionista recepcionista = new Recepcionista(nome, cpf, dataNascimento, telefone, tipoSanguineo, matricula, login, senha, turno);
         funcionarios.add(recepcionista);
+
+        // Salva para a Persistência
+        arquivoManager.salvarFuncionarios(funcionarios);
     }
 
     public void cadastrarAdministrador(String nome, String cpf, String dataNascimento,
@@ -89,6 +115,9 @@ public class HospitalService {
         // Instancia Administrador e adiciona em funcionarios
         Administrador administrador = new Administrador(nome, cpf, dataNascimento, telefone, tipoSanguineo, matricula, login, senha, nivelAcesso);
         funcionarios.add(administrador);
+
+        // Salva para a Persistência
+        arquivoManager.salvarFuncionarios(funcionarios);
     }
 
     public List<Funcionario> listarFuncionarios() {
@@ -144,6 +173,9 @@ public class HospitalService {
         proximoIdConsulta++;
         // Adiciona consulta em consultas
         consultas.add(consulta);
+
+        // Salva para a Persistência
+        arquivoManager.salvarConsultas(consultas);
     }
 
     public void solicitarCirurgia(String cpfPaciente, String matriculaMedico, String dataHora,
@@ -163,6 +195,9 @@ public class HospitalService {
         proximoIdCirurgia++;
         // Adiciona cirurgia em cirurgias
         cirurgias.add(cirurgia);
+
+        // Salva para a Persistência
+        arquivoManager.salvarCirurgias(cirurgias);
     }
 
     public void realizarCirurgia(int idCirurgia) throws EstoqueSangueInsuficienteException {
@@ -171,6 +206,9 @@ public class HospitalService {
             if(cirurgia.getIdCirurgia() == idCirurgia) {
                 cirurgia.autorizarCirurgia(bancoDeSangue);
                 cirurgia.concluirCirurgia(bancoDeSangue);
+
+                // Salva para a Persistência
+                arquivoManager.salvarCirurgias(cirurgias);
                 return;
             }
         }
@@ -181,6 +219,9 @@ public class HospitalService {
 
     public void registrarDoacao(Pessoa doador, int quantidadeBolsas) {
         bancoDeSangue.registrarDoacao(doador, quantidadeBolsas);
+
+        // Salva para a Persistência
+        arquivoManager.salvarBancoDeSangue(bancoDeSangue);
     }
 
     public BancoDeSangue getBancoDeSangue() {
