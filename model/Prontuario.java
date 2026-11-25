@@ -47,7 +47,7 @@ public class Prontuario{
 
     public void adicionarAlergia(String alergia) {
         if(alergia==null || alergia.isBlank()) {
-            throw new IllegalArgumentException("Alergia nâo informada.");
+            throw new IllegalArgumentException("Alergia não informada.");
         }
         if (alergias.contains(alergia.trim())) {
             throw new IllegalArgumentException("Alergia já existente.");

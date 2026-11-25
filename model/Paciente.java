@@ -6,19 +6,17 @@ public class Paciente extends Pessoa{
     private String convenio;
     private Prontuario prontuario;
 
-    public Paciente(String nome, String cpf, String dataNascimento, String telefone, String tipoSanguineo, String convenio) {
+    public Paciente(String nome, String cpf, String dataNascimento, String telefone, String tipoSanguineo, String convenio, Prontuario prontuario) {
         super(nome, cpf, dataNascimento, telefone, tipoSanguineo);
         this.convenio = convenio;
-        // É necessário fazer um contador em prontuário para o id.
-        this.prontuario = new Prontuario(0);
+        this.prontuario = prontuario;
     }
 
     // Cadastro de Emergência
-    public Paciente(String nome, String cpf, String tipoSanguineo) {
+    public Paciente(String nome, String cpf, String tipoSanguineo, Prontuario prontuario) {
         super(nome, cpf, dataNascimento, telefone, tipoSanguineo);
         this.convenio = "Sem convẽnio"; // valor default para caso de cadastro de emergencia
-        // É necessário fazer um contador em prontuário para o id.
-        this.prontuario = new Prontuario(0);
+        this.prontuario = prontuario;
     }
 
     @Override
