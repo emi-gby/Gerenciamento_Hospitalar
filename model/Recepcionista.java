@@ -14,6 +14,7 @@ public class Recepcionista extends Funcionario {
     public List<String> getFuncionalidades() {
         return List.of("Cadastrar Paciente",
                         "Agendar Consulta",
+                        "Cancelar Consulta",
                         "Solicitar Cirurgia",
                         "Registrar Doação de Sangue",
                         "Consultar Banco de Sangue");

@@ -66,6 +66,8 @@ public class HospitalService {
     }
 
     // --- CADASTROS E LISTAGENS (PARA TABELAS / TELAS) ---
+
+    // (Recepcionista)
     public void cadastrarPaciente(String nome, String cpf, String dataNascimento,
                                   String telefone, String tipoSanguineo, String convenio) {
 
@@ -87,6 +89,7 @@ public class HospitalService {
         arquivoManager.salvarPacientes(pacientes);
     }
 
+    // (Administrador)
     public void cadastrarMedico(String nome, String cpf, String dataNascimento,
                                 String telefone, String tipoSanguineo, String matricula,
                                 String login, String senha, String crm, String especialidade) {
@@ -98,6 +101,7 @@ public class HospitalService {
         arquivoManager.salvarFuncionarios(funcionarios);
     }
 
+    // (Administrador)
     public void cadastrarRecepcionista(String nome, String cpf, String dataNascimento,
                                        String telefone, String tipoSanguineo, String matricula,
                                        String login, String senha, String turno) {
@@ -109,6 +113,7 @@ public class HospitalService {
         arquivoManager.salvarFuncionarios(funcionarios);
     }
 
+    // (Administrador)
     public void cadastrarAdministrador(String nome, String cpf, String dataNascimento,
                                        String telefone, String tipoSanguineo, String matricula,
                                        String login, String senha, int nivelAcesso) {
@@ -158,6 +163,7 @@ public class HospitalService {
     }
 
     // --- CONSULTAS, CIRURGIAS E BANCO DE SANGUE ---
+    // (Recepcionista)
     public void agendarConsulta(String dataHora, String cpfPaciente, String matriculaMedico) {
         // Localizar Paciente e Medico
         Paciente paciente = buscarPacientePorCpf(cpfPaciente);
@@ -178,6 +184,55 @@ public class HospitalService {
         arquivoManager.salvarConsultas(consultas);
     }
 
+    // (Recepcionista)
+    public void cancelarConsulta(int idConsulta) {
+        for (Consulta consulta : consultas) {
+            if (consulta.getIdConsulta() == idConsulta) {
+                consulta.cancelar();
+                // Salva para a Persistência
+                arquivoManager.salvarConsultas(consultas);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Consulta não encontrada.");
+    }
+
+    // (Medico)
+    public void concluirConsulta(int idConsulta) {
+        for (Consulta consulta : consultas) {
+            if (consulta.getIdConsulta() == idConsulta) {
+                consulta.concluir();
+                // Salva para a Persistência
+                arquivoManager.salvarConsultas(consultas);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Consulta não encontrada.");
+    }
+
+    // (Medico)
+    public void adicionarRegistroProntuario(Medico medico, String cpfPaciente, String descricao, String prescricao) {
+        Paciente paciente = buscarPacientePorCpf(cpfPaciente);
+        if (paciente == null) {
+            throw new IllegalArgumentException("Paciente não encontrado.");
+        }
+        Prontuario prontuario = paciente.getProntuario();
+        prontuario.adicionarRegistro(medico, descricao, prescricao);
+        arquivoManager.salvarPaciente();
+    }
+
+    // (Medico)
+    public void adicionarAlergiaProntuario(String cpfPaciente, String alergia) {
+        Paciente paciente = buscarPacientePorCpf(cpfPaciente);
+        if (paciente == null) {
+            throw new IllegalArgumentException("Paciente não encontrado.");
+        }
+        Prontuario prontuario = paciente.getProntuario();
+        prontuario.adicionarAlergia(alergia);
+        arquivoManager.salvarPaciente();
+    }
+
+    // (Recepcionista)
     public void solicitarCirurgia(String cpfPaciente, String matriculaMedico, String dataHora,
                                   String tipoCirurgia, boolean isEmergencia, int bolsasSangueNecessarias) {
         // Localizar Paciente e Medico
@@ -200,6 +255,7 @@ public class HospitalService {
         arquivoManager.salvarCirurgias(cirurgias);
     }
 
+    // (Medico)
     public void realizarCirurgia(int idCirurgia) throws EstoqueSangueInsuficienteException {
         // Localizar Cirurgia, autorizar e concluir
         for(Cirurgia cirurgia : cirurgias) {
@@ -217,6 +273,7 @@ public class HospitalService {
 
     }
 
+    // (Recepcionista)
     public void registrarDoacao(Pessoa doador, int quantidadeBolsas) {
         bancoDeSangue.registrarDoacao(doador, quantidadeBolsas);
 

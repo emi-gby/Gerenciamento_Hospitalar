@@ -22,6 +22,7 @@ public class Medico extends Funcionario {
     @Override
     public List<String> getFuncionalidades() {
         return List.of("Visualizar Agenda",
+                        "Concluir Consulta",
                         "Editar Prontuário");
     }
 
