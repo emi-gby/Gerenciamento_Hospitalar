@@ -38,21 +38,44 @@ public class HospitalService {
 
         carregarDados();
 
-        // recalcula os contadores de id a partir dos dados já salvos
-        proximoIdProntuario = (pacientes.get(pacientes.size() -1).getProntuario().getIdProntuario()) + 1;
-        proximoIdConsulta = consultas.get(consultas.size() -1) + 1;
-        proximoIdCirurgia = cirurgias.get(cirurgias.size() -1) + 1;
-
     }
 
     // --- CARREGAR DADOS DO SISTEMA ---
     public void carregarDados() {
-        arquivoManager.carregarFuncionarios();
-        arquivoManager.carregarPacientes();
-        arquivoManager.carregarBancoDeSangue();
-        arquivoManager.carregarConsultas();
-        arquivoManager.carregarCirurgias();
+        funcionarios = arquivoManager.carregarFuncionarios();
+        pacientes = arquivoManager.carregarPacientes();
+        bancoDeSangue = arquivoManager.carregarBancoDeSangue();
+        consultas = arquivoManager.carregarConsultas();
+        cirurgias = arquivoManager.carregarCirurgias();
 
+        atualizarContadoresId();
+    }
+
+    public void atualizarContadoresId() {
+        // recalcula os contadores de id a partir dos maiores valores de id dos dados
+        int maxProntuario = 0;
+        for (Paciente p : pacientes) {
+            if(p != null && p.getProntuario().getIdProntuario() > maxProntuario) {
+                maxProntuario = p.getProntuario().getIdProntuario();
+            }
+        }
+        this.proximoIdProntuario = maxProntuario + 1;
+
+        int maxConsulta = 0;
+        for (Consulta c : consultas) {
+            if (c.getIdConsulta() > maxConsulta) {
+                maxConsulta = c.getIdConsulta();
+            }
+        }
+        this.proximoIdConsulta = maxConsulta + 1;
+
+        int maxCirurgia = 0;
+        for (Cirurgia cir : cirurgias) {
+            if (cir.getIdCirurgia() > maxCirurgia) {
+                maxCirurgia = cir.getIdCirurgia();
+            }
+        }
+        this.proximoIdCirurgia = maxCirurgia + 1;
     }
 
     // --- AUTENTICAÇÃO ---
@@ -125,6 +148,79 @@ public class HospitalService {
         arquivoManager.salvarFuncionarios(funcionarios);
     }
 
+    // (Administrador)
+    public void atualizarFuncionario(String matricula, String nome, String telefone,
+                                     String tipoSanguineo, String login, String senha,
+                                     String crm, String especialidade,
+                                     String turno, Integer nivelAcesso) {
+        if (matricula == null || matricula.isBlank()) {
+            throw new IllegalArgumentException("Matrícula não informada.");
+        }
+        for (Funcionario funcionario : funcionarios) {
+            if (funcionario.getMatricula().equals(matricula)) {
+                if (nome != null && !nome.isBlank()) {
+                    funcionario.setNome(nome.trim());
+                }
+                if (telefone != null && !telefone.isBlank()) {
+                    funcionario.setTelefone(telefone.trim());
+                }
+                if (tipoSanguineo != null && !tipoSanguineo.isBlank()) {
+                    funcionario.setTipoSanguineo(tipoSanguineo.trim());
+                }
+                if (login != null && !login.isBlank()) {
+                    funcionario.setLogin(login.trim());
+                }
+
+                if (funcionario instanceof Medico) {
+                    Medico m = (Medico) funcionario;
+                    if (especialidade != null && !especialidade.isBlank()) {
+                        m.setEspecialidade(especialidade.trim());
+                    }
+                } else if (funcionario instanceof Recepcionista) {
+                    Recepcionista r = (Recepcionista) funcionario;
+                    if (turno != null && !turno.isBlank()) {
+                        r.setTurno(turno.trim());
+                    }
+                } else if (funcionario instanceof Administrador) {
+                    Administrador a = (Administrador) funcionario;
+                    if (nivelAcesso != null) {
+                        a.setNivelAcesso(nivelAcesso);
+                    }
+                }
+
+                arquivoManager.salvarFuncionarios(funcionarios);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Funcionário não encontrado.");
+
+    }
+
+    // (Administrador)
+    public void removerFuncionario(String matricula, Funcionario usuario) {
+        if(!(usuario instanceof Administrador)) {
+            throw new SecurityException("Apenas administradores com nível de acesso 2 podem remover funcionários.");
+        }
+        Administrador adm = (Administrador) usuario;
+        if (adm.getNivelAcesso() == 1) {
+            throw new SecurityException("Apenas administradores com nível de acesso 2 podem remover funcionários.");
+        }
+
+        if (adm.getMatricula().equals(matricula)) {
+            throw new IllegalArgumentException("Não é possível remover o usuário atual do sistema.");
+        }
+        for (Funcionario funcionario : funcionarios) {
+            if(funcionario.getMatricula().equals(matricula)) {
+                funcionarios.remove(funcionario);
+
+                // Salva para a Persistência
+                arquivoManager.salvarFuncionarios(funcionarios);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Funcionário não encontrado.");
+    }
+
     public List<Funcionario> listarFuncionarios() {
         return funcionarios;
     }
@@ -172,7 +268,7 @@ public class HospitalService {
         }
         Medico medico = buscarMedicoPorMatricula(matriculaMedico);
         if(medico == null) {
-            throws new IllegalArgumentException("Médico não encontrado.");
+            throw new IllegalArgumentException("Médico não encontrado.");
         }
         // Cria consulta
         Consulta consulta = new Consulta(proximoIdConsulta, dataHora, paciente, medico);
@@ -218,7 +314,18 @@ public class HospitalService {
         }
         Prontuario prontuario = paciente.getProntuario();
         prontuario.adicionarRegistro(medico, descricao, prescricao);
-        arquivoManager.salvarPaciente();
+        arquivoManager.salvarPacientes(pacientes);
+    }
+
+    // (Medico)
+    public void adicionarRegistroProntuario(Medico medico, String cpfPaciente, String descricao) {
+        Paciente paciente = buscarPacientePorCpf(cpfPaciente);
+        if (paciente == null) {
+            throw new IllegalArgumentException("Paciente não encontrado.");
+        }
+        Prontuario prontuario = paciente.getProntuario();
+        prontuario.adicionarRegistro(medico, descricao);
+        arquivoManager.salvarPacientes(pacientes);
     }
 
     // (Medico)
@@ -229,7 +336,21 @@ public class HospitalService {
         }
         Prontuario prontuario = paciente.getProntuario();
         prontuario.adicionarAlergia(alergia);
-        arquivoManager.salvarPaciente();
+        arquivoManager.salvarPacientes(pacientes);
+    }
+
+    // (Medico)
+    public List<Consulta>  listarConsultasPorMedico(Medico medico) {
+        List<Consulta> medicoConsultas = new ArrayList<>();
+
+        for (Consulta consulta : consultas) {
+            if (consulta != && medico != null &&
+                    medico.getMatricula().equals(consulta.getMedico().getMatricula()) {
+                medicoConsultas.add(consulta);
+            }
+        }
+
+        return medicoConsultas;
     }
 
     // (Recepcionista)
@@ -265,6 +386,7 @@ public class HospitalService {
 
                 // Salva para a Persistência
                 arquivoManager.salvarCirurgias(cirurgias);
+                arquivoManager.salvarBancoDeSangue(bancoDeSangue);
                 return;
             }
         }
@@ -283,5 +405,15 @@ public class HospitalService {
 
     public BancoDeSangue getBancoDeSangue() {
         return bancoDeSangue;
+    }
+
+    // (Recepcionista)
+    public Map<String, Integer> consultarEstoqueDeSangue() {
+        return bancoDeSangue.consultarEstoque();
+    }
+
+    // (Recepcionista)
+    public int consultarEstoqueDeSangue(String tipoSanguineo) {
+        return bancoDeSangue.consultarEstoque(tipoSanguineo);
     }
 }
